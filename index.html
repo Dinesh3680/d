@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Designify - Sell Your Models</title>
+    <title>Designify</title>
 
     <!-- Google Fonts (Royal fonts) -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
@@ -24,6 +24,37 @@
             height: 100vh;
             margin: 0;
         }
+body {
+      margin: 0;
+      padding: 0;
+      background: #000; /* Dark background for night effect */
+      font-family: Arial, sans-serif;
+    }
+
+    #fireflies {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1; /* Keeps the animation behind content */
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      margin: 0 auto;
+    }
+
+    .content > section {
+      height: 100vh; /* Each section takes full viewport height */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
         /* Header Section */
         header {
@@ -42,9 +73,17 @@
             position: fixed;
             top: 20px;
             left: 20px;
-            width: 35px;
+            width: 45px;
             z-index: 10;
+            transition: all 0.3s ease-in-out;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
         }
+
+.logo:hover {
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 1)); /* Intense glow effect on hover */
+    transform: scale(1.1); /* Slight scale effect to make the glow more prominent */
+}
+
 
         header h1 {
             font-size: 50px;
@@ -58,21 +97,6 @@
             font-weight: 300;
             margin-bottom: 30px;
         }
-
-
-
-/* Background Video */
-#bg-video {
-    position: fixed; 
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;  /* This ensures the video covers the entire screen */
-    z-index: -1;  /* Ensures the video stays behind the content */
-}
-
-
 
 
 
@@ -487,23 +511,19 @@
     </style>
 </head>
 <body>
-
-<!-- Background Video -->
-    <video autoplay muted loop id="bg-video">
-        <source src="images/vid.mp4" type="video/mp4">
-    </video>
+<canvas id="fireflies"></canvas>
 
     <!-- Logo (Fixed in Left Corner) -->
     <img src="images/logo.png" alt="Logo" class="logo">
 
     <!-- Header -->
     <header>
-        <h1>Welcome to Designify👋</h1>
+        <h1>Welcome to Designify👋</h1><br>
         <p>Your Ultimate Destination for Stunning 2D, 3D Models & Software</p>
-        <a href="#models" class="btn" aria-label="Explore 3D, 2D models, and Software">Explore Our Models</a><br><br>
+        <a href="#models" class="btn" aria-label="Explore 3D, 2D models, and Software">Explore our Models!</a><br><br>
         <center><div class="model-card2" style="background-color: #4CAF50;" onclick="openModal('Contact Developer', 'Text us on telegram for any quiries or join our telegram group to order custom designs or join our team!')">Contact Owner</div></center><br>
-        You can buy models directly from this site or by contacting the owner from above button!
-<br><br>
+       <br> You can buy models directly from this site or by contacting the owner from above button!
+<br><br><br>
 <h2>
 Explore Now!
 </h2>
@@ -658,6 +678,11 @@ Explore Now!
 
 
     <script>
+
+
+
+
+
         // Scroll to Top Button
         const scrollToTopBtn = document.getElementById('scrollToTopBtn');
         window.onscroll = function() {
@@ -720,6 +745,75 @@ Explore Now!
             document.getElementById('pdfIframe').src = ''; // Stop the PDF from loading when closed
         }
 
+
+
+const canvas = document.getElementById('fireflies');
+    const ctx = canvas.getContext('2d');
+
+    // Set canvas size to match the window
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    const fireflies = [];
+    const maxFireflies = 100;
+
+    class Firefly {
+      constructor() {
+        this.x = Math.random() * canvas.width * 0.3 - 50; // Start on the left side
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 1;
+        this.speedX = Math.random() * 2 + 1; // Moves to the right
+        this.speedY = Math.random() * 2 - 1;
+        this.alpha = Math.random();
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 223, 70, ${this.alpha})`; // Warm yellow glow
+        ctx.fill();
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        // Glow effect
+        this.alpha += Math.random() * 0.05 - 0.025;
+        if (this.alpha > 1) this.alpha = 1;
+        if (this.alpha < 0) this.alpha = 0;
+
+        // Reset if off-screen
+        if (this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+          this.x = Math.random() * canvas.width * 0.3 - 50;
+          this.y = Math.random() * canvas.height;
+          this.alpha = Math.random();
+        }
+      }
+    }
+
+    function initFireflies() {
+      for (let i = 0; i < maxFireflies; i++) {
+        fireflies.push(new Firefly());
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      fireflies.forEach((firefly) => {
+        firefly.draw();
+        firefly.update();
+      });
+      requestAnimationFrame(animate);
+    }
+
+    initFireflies();
+    animate();
 
 
     </script>
